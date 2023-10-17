@@ -1,3 +1,5 @@
 ﻿  Client.cpp
-C:\Works\Term1_TCPClient\Client.cpp(34,37): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  Term1_TCPClient.vcxproj -> C:\Works\Term1_TCPClient\x64\Debug\Term1_TCPClient.exe
+C:\Works\Term1_TCPConnectingDB\Term1_TCPClient\Client.cpp(52,39): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Works\Term1_TCPConnectingDB\Term1_TCPClient\Client.cpp(66,40): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Works\Term1_TCPConnectingDB\Term1_TCPClient\Client.cpp(95,37): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  Term1_TCPClient.vcxproj -> C:\Works\Term1_TCPConnectingDB\Term1_TCPClient\x64\Debug\Term1_TCPClient.exe

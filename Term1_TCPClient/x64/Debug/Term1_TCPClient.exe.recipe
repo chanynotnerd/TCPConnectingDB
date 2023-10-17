@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Works\Term1_TCPClient\x64\Debug\Term1_TCPClient.exe</FullPath>
+      <FullPath>C:\Works\Term1_TCPConnectingDB\Term1_TCPClient\x64\Debug\Term1_TCPClient.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

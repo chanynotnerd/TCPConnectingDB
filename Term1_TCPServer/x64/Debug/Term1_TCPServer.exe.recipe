@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Works\Term1_TCPServer\x64\Debug\Term1_TCPServer.exe</FullPath>
+      <FullPath>C:\Works\Term1_TCPConnectingDB\Term1_TCPServer\x64\Debug\Term1_TCPServer.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
