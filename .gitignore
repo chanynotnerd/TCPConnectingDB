@@ -35,4 +35,9 @@
 *.out
 *.app
 
+# folders
+**/.vs/
+**/x64/
+
+
 # End of https://www.toptal.com/developers/gitignore/api/c++
