@@ -10,8 +10,6 @@ using namespace std;
 
 #pragma comment(lib, "ws2_32")
 
-// test
-
 void ReceiveMessages(SOCKET ServerSocket) {
 	char buffer[1024];
 	while (1) {
