@@ -182,141 +182,6 @@ void PerformMySQLOperations(char* ClientName, SOCKET hClntSock) {
 	catch (sql::SQLException& e) {
 		cout << "SQLException: " << e.what() << endl;
 	}
-
-
-	/*
-	sql::Connection* con = SetupMySQLConnection();
-
-	try {
-		// 이름 중복 확인 및 저장 로직
-		sql::PreparedStatement* pstmt;
-		pstmt = con->prepareStatement("SELECT COUNT(*) FROM " + tableName + " WHERE name = ?");
-		pstmt->setString(1, ClientName);
-
-		sql::ResultSet* res = pstmt->executeQuery();
-		if (res->next() && res->getInt(1) == 0) {
-			// 중복되지 않는 이름이라면 데이터베이스에 저장
-			pstmt = con->prepareStatement("INSERT INTO " + tableName + " (name) VALUES (?)");
-			pstmt->setString(1, ClientName);
-			pstmt->execute();
-		}
-		else {
-			// printf("Name already exists. Please choose a different name.\n");
-			const char* duplicateNameMsg = "DuplicateName";
-			send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
-
-			// 클라이언트로부터 새 이름을 요청
-			const char* newNameRequestMsg = "Please enter a new name: ";
-			send(hClntSock, newNameRequestMsg, strlen(newNameRequestMsg), 0);
-
-			char buffer[1024];
-			int recvlen = recv(hClntSock, buffer, sizeof(buffer), 0);
-			if (recvlen > 0) {
-				buffer[recvlen] = '\0';
-				ClientName = buffer;
-
-				// 새 이름으로 다시 중복 확인 및 저장
-				PerformMySQLOperations(ClientName, hClntSock);
-			}
-		}
-		delete pstmt;
-		delete con;
-	}
-	catch (sql::SQLException& e) {
-		cout << "SQLException: " << e.what() << endl;
-	}
-	*/
-
-	/*
-	sql::Connection* con = SetupMySQLConnection();
-
-	try {
-		// 이름 중복 확인 및 저장 로직
-		sql::PreparedStatement* pstmt;
-		pstmt = con->prepareStatement("SELECT COUNT(*) FROM " + tableName + " WHERE name = ?");
-		pstmt->setString(1, ClientName);
-
-		sql::ResultSet* res = pstmt->executeQuery();
-		if (res->next() && res->getInt(1) == 0) {
-			// 중복되지 않는 이름이라면 데이터베이스에 저장
-			pstmt = con->prepareStatement("INSERT INTO " + tableName + " (name) VALUES (?)");
-			pstmt->setString(1, ClientName);
-			pstmt->execute();
-
-			const char* connectedMsg = "Connected successfully";
-			send(hClntSock, connectedMsg, strlen(connectedMsg), 0);
-
-			printf("%s 님이 접속하셨습니다.\n", ClientName);
-		}
-		else {
-			const char* duplicateNameMsg = "DuplicateName";
-			send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
-
-			const char* newNameRequestMsg = "Please enter a new name: ";
-			send(hClntSock, newNameRequestMsg, strlen(newNameRequestMsg), 0);
-
-			char buffer[1024];
-			int recvlen = recv(hClntSock, buffer, sizeof(buffer), 0);
-			if (recvlen > 0) {
-				buffer[recvlen] = '\0';
-				ClientName = buffer;
-
-				// 새 이름으로 다시 중복 확인 및 저장
-				PerformMySQLOperations(ClientName, hClntSock);
-			}
-		}
-		delete pstmt;
-		delete con;
-	}
-	catch (sql::SQLException& e) {
-		cout << "SQLException: " << e.what() << endl;
-	}
-	*/  // 가장 최근 작성 코드 부분		
-	// 230줄이 가장 최근까지 작업한 코드
-	/*
-	sql::Connection* con = SetupMySQLConnection();
-
-	try {
-		while (IsNameDuplicate(ClientName)) {
-			// 중복 이름인 경우 클라이언트에 중복 메시지를 보냄
-			const char* duplicateNameMsg = "DuplicateName";
-			send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
-
-			// 새 이름을 클라이언트로부터 다시 받음
-			char newNameBuffer[1024];
-			int newNameLen = recv(hClntSock, newNameBuffer, sizeof(newNameBuffer), 0);
-			if (newNameLen > 0) {
-				newNameBuffer[newNameLen] = '\0';
-
-				if (!IsNameDuplicate(newNameBuffer)) {
-					// 클라이언트에게 연결 성공 메시지를 보냄
-					const char* connectedMsg = "Connected successfully";
-					send(hClntSock, connectedMsg, strlen(connectedMsg), 0);
-
-					printf("%s 님이 접속하셨습니다.\n", newNameBuffer);
-
-					// 새 이름을 클라이언트의 이름으로 설정
-					// strcpy_s(ClientName, sizeof(ClientName), newNameBuffer);
-					strcpy_s(ClientName, newNameBuffer);
-
-					// 이후 로직을 추가하여 클라이언트가 메시지를 주고받을 수 있게 구현
-					break;
-				}
-			}
-		}
-
-		// 중복 확인이 완료된 후 데이터베이스에 저장
-		sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO " + tableName + " (name) VALUES (?)");
-		pstmt->setString(1, ClientName);
-		pstmt->execute();
-		delete pstmt;
-		delete con;
-	}
-	catch (sql::SQLException& e) {
-		cout << "SQLException: " << e.what() << endl;
-	}
-	*/
-
 }
 
 unsigned int __stdcall HandleClient(void* arg)
@@ -337,97 +202,12 @@ unsigned int __stdcall HandleClient(void* arg)
 
 		bool isNameDuplicate = IsNameDuplicate(ClientName);
 		PerformMySQLOperations(ClientName, hClntSock);
-		/*
-		if (isNameDuplicate) {
-			// 중복 이름인 경우 클라이언트에 중복 메시지를 보냄
-			const char* duplicateNameMsg = "DuplicateName";
-			send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
-
-			// 새 이름을 클라이언트로부터 다시 받음
-			char newNameBuffer[1024];
-			int newNameLen = recv(hClntSock, newNameBuffer, sizeof(newNameBuffer), 0);
-			if (newNameLen > 0) {
-				newNameBuffer[newNameLen] = '\0';
-				strcpy_s(ClientName, sizeof(ClientName), newNameBuffer);
-			}
-		}*/
-		/*
-		while (IsNameDuplicate(ClientName)) {
-			// 중복 이름인 경우 클라이언트에 중복 메시지를 보냄
-			const char* duplicateNameMsg = "DuplicateName";
-			send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
-
-			// 새 이름을 클라이언트로부터 다시 받음
-			char newNameBuffer[1024];
-			int newNameLen = recv(hClntSock, newNameBuffer, sizeof(newNameBuffer), 0);
-			if (newNameLen > 0) {
-				newNameBuffer[newNameLen] = '\0';
-				strcpy_s(ClientName, sizeof(ClientName), newNameBuffer);
-			}
-		}
-		*/
 		if (!isNameDuplicate) {
 			const char* connectedMsg = "Connected successfully";
 			send(hClntSock, connectedMsg, strlen(connectedMsg), 0);
 			printf("%s 님이 접속하셨습니다.\n", ClientName);
-			/*
-			// 클라이언트에게 연결 성공 메시지를 보냄
-			const char* connectedMsg = "Connected successfully";
-			send(hClntSock, connectedMsg, strlen(connectedMsg), 0);
-			printf("%s 님이 접속하셨습니다.\n", ClientName);
-			//printf("%s 님이 접속하셨습니다.\n", ClientName);
-
-			// 중복되지 않은 이름을 데이터베이스에 저장
-			sql::Connection* con = SetupMySQLConnection();
-			sql::PreparedStatement* pstmt = con->prepareStatement("INSERT INTO " + tableName + " (name) VALUES (?)");
-			pstmt->setString(1, ClientName);
-			pstmt->execute();
-			delete pstmt;
-			delete con;
-			*/
-			// PerformMySQLOperations(ClientName, hClntSock);
 
 		}
-		// 이후 로직을 추가하여 클라이언트가 메시지를 주고받을 수 있게 구현
-		/*
-		if (IsNameDuplicate(ClientName)) {
-			// 중복 이름인 경우 클라이언트에 중복 메시지를 보냄
-			const char* duplicateNameMsg = "DuplicateName";
-			send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
-
-			// 새 이름을 클라이언트로부터 다시 받음
-			char newNameBuffer[1024];
-			int newNameLen = recv(hClntSock, newNameBuffer, sizeof(newNameBuffer), 0);
-			if (newNameLen > 0) {
-				newNameBuffer[newNameLen] = '\0';
-
-				// 새 이름으로 다시 중복 확인 및 저장
-				while (IsNameDuplicate(newNameBuffer)) {
-					const char* duplicateNameMsg = "DuplicateName";
-					send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
-
-					// 새 이름을 클라이언트로부터 다시 받음
-					newNameLen = recv(hClntSock, newNameBuffer, sizeof(newNameBuffer), 0);
-					if (newNameLen > 0) {
-						newNameBuffer[newNameLen] = '\0';
-					}
-				}
-
-				strcpy_s(ClientName, sizeof(ClientName), newNameBuffer);
-			}
-		}
-		else {
-			// 클라이언트에게 연결 성공 메시지를 보냄
-			const char* connectedMsg = "Connected successfully";
-			send(hClntSock, connectedMsg, strlen(connectedMsg), 0);
-
-			printf("%s 님이 접속하셨습니다.\n", ClientName);
-			// 이후 로직을 추가하여 클라이언트가 메시지를 주고받을 수 있게 구현
-		}
-		// printf("%s 님이 접속하셨습니다. \n", ClientName);
-		PerformMySQLOperations(ClientName, hClntSock);
-		// printf("Client %s:%d's name is %s.\n", clntIP, ntohs(clntAddr.sin_port), ClientName);
-		*/
 	}
 
 	// 소켓이 연결된 peer의 주소 확인. hClntSock이 소켓 지시자이며 여기에 연결한 상대의 주소 정보를 가져옴.
@@ -436,7 +216,6 @@ unsigned int __stdcall HandleClient(void* arg)
 		// 주소 정보를 가져와 연결이 되었으면 서버의 콘솔창에 연결된 클라이언트의 정보 출력
 		if (inet_ntop(AF_INET, &(clntAddr.sin_addr), clntIP, IP_STRING_LENGTH) != NULL)
 		{
-			// printf("Connecting client %s:%d\n", clntIP, ntohs(clntAddr.sin_port));
 
 		}
 		else
@@ -452,7 +231,6 @@ unsigned int __stdcall HandleClient(void* arg)
 		{
 			// 클라이언트의 응답 출력
 			buffer[recvlen] = '\0';
-			// printf("Received from client %s:%d: %s\n", clntIP, ntohs(clntAddr.sin_port), buffer);
 			printf("%s 님의 대화 : %s\n", ClientName, buffer);
 
 		}

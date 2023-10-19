@@ -64,33 +64,6 @@ int main()
 		// 다시 이름을 서버로 전송
 		send(ServerSocket, ClientName, strlen(ClientName), 0);
 
-		/*
-	   // 다시 이름을 서버로 전송
-	   send(ServerSocket, ClientName, strlen(ClientName), 0);
-	   */
-
-	   /*
-	  // 서버로부터 연결 성공 메시지를 받아야합니다.
-	   recv(ServerSocket, response, sizeof(response), 0);
-	   if (strcmp(response, "Connected successfully") == 0) {
-		   cout << "Connected successfully. You can sending messages for now." << endl;
-	   }
-	   */
-	}
-	/*
-	// 중복 이름 메시지를 감지한 경우 새 이름을 요청
-	if (strcmp(response, "DuplicateName") == 0) {
-		// cout << "Name already exists. Please choose a different name: ";
-		cin.getline(ClientName, sizeof(ClientName));
-
-		// 다시 이름을 서버로 전송
-		send(ServerSocket, ClientName, strlen(ClientName), 0);
-	}
-	else
-	{
-		cout << "Connected sucessfully. You can start sending Messages." << endl;
-	}
-	*/
 	// 스레드 생성 및 ReceiveMessages 함수 실행
 	HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ReceiveMessages, (LPVOID)ServerSocket, 0, NULL);
 
