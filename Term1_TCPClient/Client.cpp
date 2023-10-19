@@ -21,7 +21,6 @@ void ReceiveMessages(SOCKET ServerSocket) {
 	}
 }
 
-
 int main()
 {
 	// Winsock 초기화, 소켓 사용하기 전에 꼭 초기화 해야함, 그냥 첫 순서
@@ -51,7 +50,7 @@ int main()
 	// 이름을 서버로 전송
 	send(ServerSocket, ClientName, strlen(ClientName), 0);
 
-	// 42~54줄은 이름 중복검사 용도
+	// 이름 중복검사 용도
 	char response[100];
 	int recvlen = recv(ServerSocket, response, sizeof(response), 0);
 	response[recvlen] = '\0';
@@ -59,17 +58,25 @@ int main()
 	cout << "Received from server: " << response << endl;
 
 	if (strcmp(response, "DuplicatedName") == 0) {
-		cout << "Name already exists. Please choose a different name: ";
+		cout << "Name already exists. Please choose a different name : ";
 		cin.getline(ClientName, sizeof(ClientName));
 
 		// 다시 이름을 서버로 전송
 		send(ServerSocket, ClientName, strlen(ClientName), 0);
-	}
-	else {
-		cout << "Connected successfully. You can start sending messages." << endl;
-	}
 
+		/*
+	   // 다시 이름을 서버로 전송
+	   send(ServerSocket, ClientName, strlen(ClientName), 0);
+	   */
 
+	   /*
+	  // 서버로부터 연결 성공 메시지를 받아야합니다.
+	   recv(ServerSocket, response, sizeof(response), 0);
+	   if (strcmp(response, "Connected successfully") == 0) {
+		   cout << "Connected successfully. You can sending messages for now." << endl;
+	   }
+	   */
+	}
 	/*
 	// 중복 이름 메시지를 감지한 경우 새 이름을 요청
 	if (strcmp(response, "DuplicateName") == 0) {
