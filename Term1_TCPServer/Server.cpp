@@ -46,25 +46,30 @@ int     szClntAddr;
 char    message[] = "0";
 char    buffer[1024] = { 0, };
 
+// MySQL 데이터베이스와의 연ㄴ결 설정.
 sql::Connection* SetupMySQLConnection() {
-	driver = get_driver_instance();
-	con = driver->connect(server, username, password);
-	con->setSchema(database);
-	return con;
+	driver = get_driver_instance();	// 드라이버 인스턴스 반환, MySQL과 연결설정해주기 위함
+	con = driver->connect(server, username, password);	// MySQL 서버 연결 설정
+	con->setSchema(database);	// 스키마 세팅
+	return con;	// 드라이버 연결객체 반환.
 }
 
 // 클라이언트 이름이 중복인지 확인하는 함수
 bool IsNameDuplicate(const string& name) {
-	sql::Connection* con = SetupMySQLConnection();
-	sql::PreparedStatement* pstmt;
+	sql::Connection* con = SetupMySQLConnection();	// MySQL DB연결설정을 위한 함수 호출
+	sql::PreparedStatement* pstmt;	
 	pstmt = con->prepareStatement("SELECT COUNT(*) FROM " + tableName + " WHERE name = ?");
+	// 쿼리문 쓰기 위한 객체 선언
 	pstmt->setString(1, name);
+	// 쿼리문 매개변수 지정.
 
-	sql::ResultSet* res = pstmt->executeQuery();
+	sql::ResultSet* res = pstmt->executeQuery();	// 쿼리문 실행 및 결과 받아오기
 	bool isDuplicate = res->next() && res->getInt(1) > 0;
+	// 결과값(res)를 확인, 다음 행으로 이동하면서 첫번째 열 값을 가져와 비교, 0보다 크면 true(중복)
 	delete pstmt;
 	delete con;
-	return isDuplicate;
+	// SQL 객체 delete
+	return isDuplicate;	// 중복하는지 비교 변수 반환.
 }
 
 int main()
@@ -144,15 +149,16 @@ int main()
 }
 
 void PerformMySQLOperations(char* ClientName, SOCKET hClntSock) {
-	sql::Connection* con = SetupMySQLConnection();
+	sql::Connection* con = SetupMySQLConnection();	// DB연결
 
 	try {
+		// 이름이 중복된다면 반복.
 		while (IsNameDuplicate(ClientName)) {
 			// 중복 이름인 경우 클라이언트에 중복 메시지를 보냄
 			const char* duplicateNameMsg = "DuplicateName";
 			send(hClntSock, duplicateNameMsg, strlen(duplicateNameMsg), 0);
 
-			// 새 이름을 클라이언트로부터 다시 받음
+			// recv()로 새 이름을 클라이언트로부터 다시 받음
 			char newNameBuffer[1024];
 			int newNameLen = recv(hClntSock, newNameBuffer, sizeof(newNameBuffer), 0);
 			if (newNameLen > 0) {
@@ -179,6 +185,7 @@ void PerformMySQLOperations(char* ClientName, SOCKET hClntSock) {
 		delete pstmt;
 		delete con;
 	}
+	// 예외처리
 	catch (sql::SQLException& e) {
 		cout << "SQLException: " << e.what() << endl;
 	}
@@ -186,7 +193,8 @@ void PerformMySQLOperations(char* ClientName, SOCKET hClntSock) {
 
 unsigned int __stdcall HandleClient(void* arg)
 {
-	SOCKET hClntSock = (SOCKET)arg;
+	// 클라이언트 소켓 지시자와 버퍼 설정
+	SOCKET hClntSock = (SOCKET)arg;	// 소켓 지시자 지정.
 	char buffer[1024] = { 0 };
 	SOCKADDR_IN clntAddr;
 	int clntAddrLen = sizeof(clntAddr);
@@ -200,9 +208,12 @@ unsigned int __stdcall HandleClient(void* arg)
 	{
 		ClientName[recvlen] = '\0';
 
+		// 클라이언트 이름이 중복되는지 확인 후 MySQL 작업
 		bool isNameDuplicate = IsNameDuplicate(ClientName);
 		PerformMySQLOperations(ClientName, hClntSock);
-		if (!isNameDuplicate) {
+
+		if (!isNameDuplicate) {	
+			// 이름이 중복되지 않으면 클라이언트에게 연결 성공 메세지 송신. 서버와 연결된 클라이언트 정보 출력
 			const char* connectedMsg = "Connected successfully";
 			send(hClntSock, connectedMsg, strlen(connectedMsg), 0);
 			printf("%s 님이 접속하셨습니다.\n", ClientName);
@@ -224,7 +235,7 @@ unsigned int __stdcall HandleClient(void* arg)
 		}
 	}
 
-	while (1)
+	while (1)	// 무한루프로 상시 클라이언트의 응답 수신 및 출력
 	{
 		int recvlen = recv(hClntSock, buffer, sizeof(buffer), 0);
 		if (recvlen > 0)
@@ -234,14 +245,14 @@ unsigned int __stdcall HandleClient(void* arg)
 			printf("%s 님의 대화 : %s\n", ClientName, buffer);
 
 		}
-		/*
+		
 		else if (recvlen == 0)
 		{
 			// 클라이언트가 quit으로 연결을 끊었을 경우
 			// printf("Client%s:%d disconnected.\n", clntIP, ntohs(clntAddr.sin_port));
 			printf("%s님이 quit 채팅을 통해 대화방을 나가셨습니다.\n", ClientName);
 			break;
-		}*/
+		}
 		else
 		{
 			// 예외 : quit으로 안 끄고 x 눌러 콘솔창 종료, 이외에도 있겠지만 우선 보이는게 이거라서.. 
